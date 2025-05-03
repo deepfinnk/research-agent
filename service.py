@@ -1,9 +1,18 @@
+import json
 from flask import Flask, request, jsonify
 import os
 import sys
 import pathlib
 from flasgger import Swagger
 from datetime import datetime
+from camel.agents import ChatAgent
+from camel.models import ModelFactory
+from camel.types import ModelPlatformType, ModelType
+from pydantic import BaseModel
+from typing import List
+
+class ResponseFormat(BaseModel):
+    points: List[str]
 
 # Add the agent directory to the path to find deep_finnk
 # Assuming service.py is in the 'agent' directory
@@ -116,15 +125,22 @@ def handle_query():
             ), 500
 
         # todo: summarize result into shorter plan
-        result = result
+        model = ModelFactory.create(
+            model_platform=ModelPlatformType.GEMINI,  # Using enum
+            model_type=ModelType.GEMINI_2_5_PRO_EXP,         # Using enum
+        )
+        agent = ChatAgent("Make a nice summary of actions that user needs to take to achieve the desired goal", model=model)
+        result = agent.step(result, response_format=ResponseFormat)
+        first_message = result.msgs[0]
+        text_response = first_message.content
 
         # Store the query and result in history
         now = datetime.now()
-        query_history.append({"prompt": prompt, "result": result, "created_at": now})
+        query_history.append({"prompt": prompt, "result": text_response, "created_at": now})
 
         # Assuming the result is a string that might need further processing
         # or is directly returnable.
-        return jsonify({"result": result})
+        return jsonify({"result": text_response})
     except Exception as e:
         print("Error processing query: %s" % e)
         # Log the full traceback for debugging
