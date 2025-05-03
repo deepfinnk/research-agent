@@ -171,7 +171,7 @@ class DeepFinnk:
                 point += " As an anwer, write a summary of your findings."
                 print(f"\n--- Running Deep Search for Point: {point} ---")
                 try:
-                    deep_result_answer = self.deep_search(prompt=point, round_limit=3)
+                    deep_result_answer = self.deep_search(prompt=point, round_limit=2)
                     print(f"--- Result for Point '{point}': ---")
                     deep_result_answer = [
                         item["assistant"]

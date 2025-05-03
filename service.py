@@ -216,22 +216,24 @@ def implement_plan():
 
     # Construct a more effective task prompt
     task_prompt = (
-        "Based on the following financial plan:"
-        f"<plan>{plan}</plan>. "
-        "Please use the available Bunq tools to implement the necessary budgeting accounts, savings goals, or other configurations as described."
-        "First, check which bunq tools are available to you. Then, create a step by step plan on how you will use them. Lastly, proceed with the implementation."
-        "For any questions, use the tools. There are tools to get the account overview, accounts, payments, cards, etc. Check the tools and use them."
-        "Make sure to create monetary accounts for every budget envelope, and to transfer the appropriate amount of money to it."
-        "Focus strictly on executing the plan using only the provided Bunq tools."
+        "Based on the following financial details:"
+        f"<details>{plan}</details>. "
+        "Here's what you must do:\n"
+        "1. Check which bunq tools are available to you.\n"
+        "2. Check the active monetary accounts\n"
+        "3. Make a list of needed monetary accounts\n"
+        "4. Create the missing monetary accounts (e.g., groceries, savings, bills, etc.) based on the plan.\n"
+        "5. There are tools to get the account overview, accounts, payments, cards, etc. Check the tools and use them."
+        "6. If a tool fails, retry it."
+        "7. YOU MUST create monetary accounts for every budget envelope, and to transfer the appropriate amount of money to it."
+        "Iteratively do each step, without asking the user for input. Always proceed to the next step. Proceed on implementing the plan."
     )
 
     payload = {"task": task_prompt}
 
     try:
         print(f"Sending task to Bunq API: {task_endpoint} with payload: {payload}")
-        response = requests.post(
-            task_endpoint, json=payload, timeout=60
-        )  # Added timeout
+        response = requests.post(task_endpoint, json=payload)  # Added timeout
         response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
 
         bunq_response_data = response.json()
