@@ -1,0 +1,11 @@
+2025-05-03 01:55:44,341 - root - INFO - Log file has been cleared
+2025-05-03 01:55:44,343 - root - INFO - Processing question: 'Open Google search, summarize the github stars, fork counts, etc. of camel-ai's camel framework, and write the numbers into a python file using the plot package, save it locally, and run the generated python file.', using module: run_gemini
+2025-05-03 01:55:44,344 - root - INFO - Importing module: examples.run_gemini
+2025-05-03 01:55:44,344 - root - ERROR - Unable to import module examples.run_gemini: No module named 'examples'
+2025-05-03 01:56:01,864 - root - INFO - Application closed
+2025-05-03 01:56:01,964 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-8' coro=<Queue.start_progress_updates() running at /Users/deniskrylov/Developer/Bunq Hackathon/agent/.venv/lib/python3.12/site-packages/gradio/queueing.py:358> wait_for=<Future pending cb=[Task.__wakeup()]>>
+2025-05-03 01:56:01,964 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-3' coro=<_delete_state() running at /Users/deniskrylov/Developer/Bunq Hackathon/agent/.venv/lib/python3.12/site-packages/gradio/route_utils.py:935> wait_for=<Future pending cb=[Task.__wakeup()]>>
+2025-05-03 01:56:01,964 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-7' coro=<Queue.start_processing() running at /Users/deniskrylov/Developer/Bunq Hackathon/agent/.venv/lib/python3.12/site-packages/gradio/queueing.py:308> wait_for=<Future pending cb=[Task.__wakeup()]>>
