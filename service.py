@@ -114,6 +114,10 @@ def handle_query():
             return jsonify(
                 {"error": "Query execution failed or returned no result"}
             ), 500
+
+        # todo: summarize result into shorter plan
+        result = result
+
         # Store the query and result in history
         now = datetime.now()
         query_history.append({"prompt": prompt, "result": result, "created_at": now})
