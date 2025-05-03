@@ -1,3 +1,6 @@
 [submodule "owl"]
 	path = owl
 	url = git@github.com:camel-ai/owl.git
+[submodule "bunq-mcp-server"]
+	path = bunq-mcp-server
+	url = git@github.com:bunq-hack/mcp-server.git
