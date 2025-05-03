@@ -19,7 +19,6 @@ from camel.toolkits import (
 from camel.types import ModelPlatformType, ModelType
 from dotenv import load_dotenv
 
-
 from pydantic import BaseModel
 from typing import List
 
@@ -60,22 +59,14 @@ env_path = base_dir / "owly" / ".env"  # Example: if .env is in agent/owly/
 # env_path = base_dir / "agent" / "owly" / ".env" # Your original path
 
 
-def get_bunq_data():
-    bunq_service = os.environ.get("BUNQ_SERVICE", "http://localhost:42069")
-    response = requests.get(f"{bunq_service}/bunq/overview")
-    return response.json() if response.status_code == 200 else {}
-
-
 print(f"Looking for .env file at: {env_path.resolve()}")  # Debug print
 load_dotenv(dotenv_path=str(env_path))
 set_log_level(level="DEBUG")
 
 
-INIT_SETTINGS = f"""
+INIT_SETTINGS = """
     You are a financial advisor in the bank Bunq in the Netherlands.
-    Here are the user's account overview: {get_bunq_data()}
     Your task is to indicate the main actions a user can take so the goal will be achieved. Take into account budgeting, taxes, current economical situation, interest rates and so on.
-    Limit it to 5 main key points.
 """
 
 print(INIT_SETTINGS)
@@ -101,7 +92,7 @@ class ResponseFormat(BaseModel):
 
 class DeepFinnk:
     MODEL_PLATFORM = ModelPlatformType.GEMINI
-    MODEL_TYPE = ModelType.GEMINI_1_5_PRO
+    MODEL_TYPE = ModelType.GEMINI_2_0_FLASH
 
     def __init__(self):
         self.models = {
@@ -209,7 +200,7 @@ class DeepFinnk:
             print(f"Error during init_query step: {e}")
             return None
 
-    def deep_search(self, prompt, round_limit=10):
+    def deep_search(self, prompt, round_limit=5):
         society = self._construct_society(prompt)
         try:
             answer, chat_history, token_count = run_society(
