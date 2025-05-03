@@ -10,6 +10,15 @@ from camel.models import ModelFactory
 from camel.types import ModelPlatformType, ModelType
 from pydantic import BaseModel
 from typing import List
+from bank_overview import generate_bank_overview
+
+import requests
+
+
+def get_bunq_data():
+    bunq_service = os.environ.get("BUNQ_SERVICE", "http://localhost:42069")
+    response = requests.get(f"{bunq_service}/bunq/overview")
+    return response.json() if response.status_code == 200 else {}
 
 class ResponseFormat(BaseModel):
     points: List[str]
@@ -129,8 +138,8 @@ def handle_query():
             model_platform=ModelPlatformType.GEMINI,  # Using enum
             model_type=ModelType.GEMINI_2_5_PRO_EXP,         # Using enum
         )
-        agent = ChatAgent("Make a nice summary of actions that user needs to take to achieve the desired goal. Write the exact numbers related to user budget (different categories like food, entertainment, transport, rent, and so on).", model=model)
-        result = agent.step(result, response_format=ResponseFormat)
+        agent = ChatAgent(model=model)
+        result = agent.step(f"Make a nice summary of actions that user needs to take to achieve the desired goal: {prompt}, based on the searched results: {result}. Here are the user's account overview: {generate_bank_overview(get_bunq_data())}. Use the figures in the account overview to backup your plan.", response_format=ResponseFormat)
         first_message = result.msgs[0]
         text_response = first_message.content
 
