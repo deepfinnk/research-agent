@@ -129,7 +129,7 @@ def handle_query():
             model_platform=ModelPlatformType.GEMINI,  # Using enum
             model_type=ModelType.GEMINI_2_5_PRO_EXP,         # Using enum
         )
-        agent = ChatAgent("Make a nice summary of actions that user needs to take to achieve the desired goal", model=model)
+        agent = ChatAgent("Make a nice summary of actions that user needs to take to achieve the desired goal. Write the exact numbers related to user budget (different categories like food, entertainment, transport, rent, and so on).", model=model)
         result = agent.step(result, response_format=ResponseFormat)
         first_message = result.msgs[0]
         text_response = first_message.content
