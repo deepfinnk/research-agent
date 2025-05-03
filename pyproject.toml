@@ -1,7 +1,13 @@
 [project]
-name = "agent"
+name = "deepfinnk-research-agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered financial agent that helps users manage their finances using their Bunq account."
+authors = [
+    { name = "Victor Hornet" },
+    { name = "Andrea Onofrei" },
+    { name = "Yulin Chen" },
+    { name = "Denis Krylov" },
+]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
