@@ -134,7 +134,7 @@ def generate_plan():
             model_type=ModelType.GEMINI_2_5_PRO_EXP,  # Using enum
         )
         agent = ChatAgent(
-            "Make a nice summary of actions that user needs to take to achieve the desired goal",
+            "Make a nice summary of actions that user needs to take to achieve the desired goal. Write the exact numbers related to user budget (different categories like food, entertainment, transport, rent, and so on).",
             model=model,
         )
         result = agent.step(result, response_format=ResponseFormat)
