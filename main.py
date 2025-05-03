@@ -1,41 +1,28 @@
-import sys
 import pathlib
-from dotenv import load_dotenv
+import sys
+
+from camel.logger import set_log_level
 from camel.models import ModelFactory
+from camel.societies import RolePlaying
 from camel.toolkits import (
-    AudioAnalysisToolkit,
-    CodeExecutionToolkit,
     ExcelToolkit,
     ImageAnalysisToolkit,
     SearchToolkit,
-    VideoAnalysisToolkit,
     BrowserToolkit,
     FileWriteToolkit,
 )
 from camel.types import ModelPlatformType, ModelType
-from camel.logger import set_log_level
-from camel.societies import RolePlaying
-
+from dotenv import load_dotenv
 from owly.utils import run_society, DocumentProcessingToolkit
+
 
 base_dir = pathlib.Path(__file__).parent.parent
 env_path = base_dir / "agent" / "owly" / ".env"
 load_dotenv(dotenv_path=str(env_path))
-
 set_log_level(level="DEBUG")
 
 
-def construct_society(question: str) -> RolePlaying:
-    r"""Construct a society of agents based on the given question.
-
-    Args:
-        question (str): The task or question to be addressed by the society.
-
-    Returns:
-        RolePlaying: A configured society of agents ready to address the question.
-    """
-
-    # Create models for different components
+def _construct_society(question: str) -> RolePlaying:
     models = {
         "user": ModelFactory.create(
             model_platform=ModelPlatformType.GEMINI,
@@ -57,11 +44,6 @@ def construct_society(question: str) -> RolePlaying:
             model_type=ModelType.GEMINI_2_0_FLASH_THINKING,
             model_config_dict={"temperature": 0},
         ),
-        "video": ModelFactory.create(
-            model_platform=ModelPlatformType.GEMINI,
-            model_type=ModelType.GEMINI_2_0_FLASH_THINKING,
-            model_config_dict={"temperature": 0},
-        ),
         "image": ModelFactory.create(
             model_platform=ModelPlatformType.GEMINI,
             model_type=ModelType.GEMINI_2_0_FLASH_THINKING,
@@ -74,36 +56,27 @@ def construct_society(question: str) -> RolePlaying:
         ),
     }
 
-    # Configure toolkits
     tools = [
         *BrowserToolkit(
-            headless=True,  # Set to True for headless mode (e.g., on remote servers)
+            headless=True,
             web_agent_model=models["browsing"],
             planning_agent_model=models["planning"],
         ).get_tools(),
-        *VideoAnalysisToolkit(model=models["video"]).get_tools(),
-        *AudioAnalysisToolkit().get_tools(),  # This requires OpenAI Key
-        *CodeExecutionToolkit(sandbox="subprocess", verbose=True).get_tools(),
         *ImageAnalysisToolkit(model=models["image"]).get_tools(),
-        SearchToolkit().search_duckduckgo,
-        SearchToolkit().search_google,  # Comment this out if you don't have google search
-        SearchToolkit().search_wiki,
+        SearchToolkit().search_duckduckgo,  # Comment this out if you don't have google search
         *ExcelToolkit().get_tools(),
         *DocumentProcessingToolkit(model=models["document"]).get_tools(),
         *FileWriteToolkit(output_dir="./").get_tools(),
     ]
 
-    # Configure agent roles and parameters
     user_agent_kwargs = {"model": models["user"]}
     assistant_agent_kwargs = {"model": models["assistant"], "tools": tools}
 
-    # Configure task parameters
     task_kwargs = {
         "task_prompt": question,
         "with_task_specify": False,
     }
 
-    # Create and return the society
     society = RolePlaying(
         **task_kwargs,
         user_role_name="user",
@@ -115,21 +88,11 @@ def construct_society(question: str) -> RolePlaying:
     return society
 
 
-def main():
-    r"""Main function to run the OWL system with an example question."""
-    # Default research question
-    default_task = "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
-
-    # Override default task if command line argument is provided
-    task = sys.argv[1] if len(sys.argv) > 1 else default_task
-
-    # Construct and run the society
-    society = construct_society(task)
+def run_owl(prompt: str):
+    society = _construct_society(prompt)
     answer, chat_history, token_count = run_society(society)
-
-    # Output the result
     print(f"\033[94mAnswer: {answer}\033[0m")
 
 
 if __name__ == "__main__":
-    main()
+    run_owl(prompt="Buying a house Netherlands. Don't verify your results.")
